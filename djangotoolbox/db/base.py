@@ -446,7 +446,7 @@ class NonrelDatabaseOperations(BaseDatabaseOperations):
         # Do convert filter parameters.
         if lookup:
             # Special case where we are looking for an empty list
-            if lookup == 'exact' and db_type == 'list' and value == u'[]':
+            if lookup == 'exact' and db_type == 'list' and value == '[]':
                 return []
             value = self._value_for_db(value, subfield,
                                        subkind, db_subtype, lookup)
@@ -459,7 +459,7 @@ class NonrelDatabaseOperations(BaseDatabaseOperations):
                 value = (
                     (key, self._value_for_db(subvalue, subfield,
                                              subkind, db_subtype, lookup))
-                    for key, subvalue in value.iteritems())
+                    for key, subvalue in value.items())
 
                 # Return just a dict, a once-flattened list;
                 if db_type == 'dict':
@@ -514,9 +514,9 @@ class NonrelDatabaseOperations(BaseDatabaseOperations):
             # Generator yielding pairs with deconverted values, the
             # "list" db_type stores keys and values interleaved.
             if db_type == 'list':
-                value = zip(value[::2], value[1::2])
+                value = list(zip(value[::2], value[1::2]))
             else:
-                value = value.iteritems()
+                value = iter(value.items())
 
             # DictField needs to hold a dict.
             return dict(
@@ -575,7 +575,7 @@ class NonrelDatabaseOperations(BaseDatabaseOperations):
         value = (
             (subfield.column, self._value_for_db(
                 subvalue, lookup=lookup, *self._convert_as(subfield, lookup)))
-            for subfield, subvalue in value.iteritems())
+            for subfield, subvalue in value.items())
 
         # Cast to a dict, interleave columns with values on a list,
         # serialize, or return a generator.
@@ -603,7 +603,7 @@ class NonrelDatabaseOperations(BaseDatabaseOperations):
 
         # Separate keys from values and create a dict or unpickle one.
         if db_type == 'list':
-            value = dict(zip(value[::2], value[1::2]))
+            value = dict(list(zip(value[::2], value[1::2])))
         elif db_type == 'bytes' or db_type == 'string':
             value = pickle.loads(value)
 
